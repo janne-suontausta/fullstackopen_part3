@@ -24,6 +24,14 @@ let persons = [
       }
 ]
 
+app.get('/api/info', (req, res) => {
+    let dateStr = new Date().toString();
+
+    res.writeHead(200, { 'Content-Type': 'text/plain' })
+    res.write('Phonebook has info for ' + persons.length + ' people\n');
+    res.end(dateStr);
+})
+
 app.get('/api/persons', (req, res) => {
     res.json(persons);
 })
