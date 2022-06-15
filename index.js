@@ -1,14 +1,16 @@
+require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const morgan = require('morgan');
+const Person = require('./models/person');
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('build'));
-app.use(morgan('tiny'))
+app.use(morgan('tiny'));
 
-let persons = [
+let people = [
     {
         "name": "Arto Hellas",
         "number": "040-123456",
@@ -35,17 +37,17 @@ app.get('/api/info', (req, res) => {
     let dateStr = new Date().toString();
 
     res.writeHead(200, { 'Content-Type': 'text/plain' })
-    res.write('Phonebook has info for ' + persons.length + ' people\n');
+    res.write('Phonebook has info for ' + people.length + ' people\n');
     res.end(dateStr);
 })
 
-app.get('/api/persons', (req, res) => {
-    res.json(persons);
+app.get('/api/people', (req, res) => {
+    Person.find({}).then(people => res.json(people));
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/people/:id', (req, res) => {
     const id = Number(req.params.id);
-    const person = persons.find(p => p.id === id);
+    const person = people.find(p => p.id === id);
 
     if (person) {
         res.json(person);
@@ -55,14 +57,14 @@ app.get('/api/persons/:id', (req, res) => {
     }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/people/:id', (req, res) => {
     const id = Number(req.params.id);
-    persons = persons.filter(p => p.id !== id);
+    people = people.filter(p => p.id !== id);
 
     res.status(204).end();
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/people', (req, res) => {
     const person = req.body;
     console.log(person);
 
@@ -72,20 +74,20 @@ app.post('/api/persons', (req, res) => {
     else if (!person.number) {
         res.status(400).json({ error: 'number is missing' });
     }
-    else if (persons.find(p => p.name === person.name)) {
+    else if (people.find(p => p.name === person.name)) {
         res.status(400).json({ error: 'name must be unique' });
     }
     else {
         const id = Math.round(Math.random() * 1000000);
         person.id = id;
-        persons = persons.concat(person)
+        people = people.concat(person);
     
         res.json(person);    
     }
 
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
