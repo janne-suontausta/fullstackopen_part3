@@ -58,10 +58,11 @@ app.get('/api/people/:id', (req, res) => {
 })
 
 app.delete('/api/people/:id', (req, res) => {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     people = people.filter(p => p.id !== id);
-
-    res.status(204).end();
+    Person.findByIdAndRemove(id).then(r => {
+        res.status(204).end();
+    });
 })
 
 app.post('/api/people', (req, res) => {
