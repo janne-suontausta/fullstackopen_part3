@@ -34,11 +34,14 @@ let people = [
 ]
 
 app.get('/api/info', (req, res) => {
-    let dateStr = new Date().toString();
+    Person.find({}).then(people => {
+        let dateStr = new Date().toString();
 
-    res.writeHead(200, { 'Content-Type': 'text/plain' })
-    res.write('Phonebook has info for ' + people.length + ' people\n');
-    res.end(dateStr);
+        res.writeHead(200, { 'Content-Type': 'text/plain' })
+        res.write('Phonebook has info for ' + people.length + ' people\n');
+        res.end(dateStr);
+    })
+    .catch(e => next(e));
 })
 
 app.get('/api/people', (req, res) => {
